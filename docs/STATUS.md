@@ -37,6 +37,7 @@ databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
 | Správa skladů a prahů | ✅ ověřeno | |
 | Produkční nasazení (Vercel) | ✅ nasazeno | |
 | `start.bat` spouštěč (Windows) | ✅ hotovo | |
+| Fallback chain: OFF → UPCitemdb → Go-UPC | ✅ hotovo | Go-UPC volitelné (VITE_GO_UPC_KEY) |
 | Indikátor otevřeného balení (`is_opened`) | ✅ hotovo | vyžaduje SQL migraci — viz níže |
 | Dokumentace | ✅ hotovo | průběžně aktualizováno |
 
