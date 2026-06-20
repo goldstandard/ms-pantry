@@ -1,0 +1,114 @@
+{
+  "app": { "title": "MS Pantry", "tagline": "食品库存" },
+  "nav": {
+    "inventory": "食品",
+    "add": "添加",
+    "categories": "分类",
+    "locations": "储藏点",
+    "logout": "退出登录"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "loading": "加载中…",
+    "saving": "保存中…",
+    "search": "搜索…",
+    "all": "全部",
+    "optional": "可选",
+    "back": "返回",
+    "none": "—",
+    "close": "关闭"
+  },
+  "auth": {
+    "loginTitle": "登录",
+    "loginSubtitle": "输入邮箱，我们会发送登录链接给你。",
+    "emailLabel": "邮箱",
+    "sendLink": "发送登录链接",
+    "sending": "发送中…",
+    "checkEmail": "已向 {{email}} 发送登录链接，请在本设备上打开。",
+    "error": "登录失败，请重试。"
+  },
+  "inventory": {
+    "empty": "这里还没有内容。",
+    "emptyHint": "点击“添加”加入第一件食品。",
+    "summaryExpired": "{{count}} 件已过期",
+    "summarySoon": "{{count}} 件即将到期",
+    "summaryOk": "{{count}} 件正常",
+    "groupByCategory": "按分类",
+    "sortByExpiry": "按到期日",
+    "packages_other": "{{count}} 包",
+    "servingsApprox": "约 {{count}} 份",
+    "uncategorized": "未分类",
+    "noResults": "没有结果。"
+  },
+  "item": {
+    "newTitle": "新食品",
+    "editTitle": "编辑食品",
+    "name": "名称",
+    "namesByLang": "各语言名称",
+    "brand": "品牌",
+    "barcode": "条形码",
+    "category": "分类",
+    "quantity": "包数",
+    "servings": "每包份数",
+    "unit": "单位",
+    "unitPlaceholder": "个 / 克 / 毫升",
+    "expiration": "到期日期",
+    "note": "备注",
+    "scan": "扫描条形码",
+    "lookupFound": "已在数据库中找到产品。",
+    "lookupNotFound": "未找到产品——请手动填写。",
+    "lookupLoading": "正在查询产品…",
+    "learnedFromProfile": "已根据历史记录预填。",
+    "translating": "正在补全名称翻译…",
+    "markConsumed": "已用完",
+    "deleteConfirm": "确定删除这件食品吗？",
+    "moveTo": "移动到储藏点",
+    "nameRequired": "请至少填写名称。"
+  },
+  "expiry": {
+    "expired": "已过期",
+    "critical": "紧急",
+    "soon": "即将到期",
+    "ok": "正常",
+    "none": "无日期",
+    "today": "今天到期",
+    "daysLeft_other": "还剩 {{count}} 天",
+    "expiredAgo_other": "已过期 {{count}} 天"
+  },
+  "scanner": {
+    "title": "扫描条形码",
+    "point": "将摄像头对准条形码",
+    "permission": "请允许使用摄像头。",
+    "noCamera": "本设备没有可用的摄像头。",
+    "switchCamera": "切换摄像头"
+  },
+  "categories": {
+    "title": "分类",
+    "add": "添加分类",
+    "namePlaceholder": "分类名称",
+    "default": "默认",
+    "deleteConfirm": "删除分类？该分类下的食品将变为未分类。",
+    "empty": "暂无分类。"
+  },
+  "locations": {
+    "title": "储藏点",
+    "add": "添加储藏点",
+    "namePlaceholder": "储藏点名称",
+    "criticalDays": "紧急（天）",
+    "soonDays": "即将到期（天）",
+    "thresholdsHelp": "距到期低于多少天时变红（紧急）/ 变橙（即将到期）。",
+    "active": "当前",
+    "deleteConfirm": "删除该储藏点及其所有食品？",
+    "cannotDeleteLast": "至少要保留一个储藏点。"
+  },
+  "lang": { "cs": "Čeština", "en": "English", "zh": "中文" },
+  "setup": {
+    "title": "完成设置",
+    "body": "应用尚未连接数据库。请在 .env.local 中设置 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY，然后重启开发服务器。",
+    "docs": "详细步骤见 README。"
+  }
+}

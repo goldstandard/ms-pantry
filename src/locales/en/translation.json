@@ -1,0 +1,117 @@
+{
+  "app": { "title": "MS Pantry", "tagline": "Food inventory" },
+  "nav": {
+    "inventory": "Items",
+    "add": "Add",
+    "categories": "Categories",
+    "locations": "Storages",
+    "logout": "Log out"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "search": "Search…",
+    "all": "All",
+    "optional": "optional",
+    "back": "Back",
+    "none": "—",
+    "close": "Close"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Enter your email and we'll send you a sign-in link.",
+    "emailLabel": "Email",
+    "sendLink": "Send sign-in link",
+    "sending": "Sending…",
+    "checkEmail": "We sent a sign-in link to {{email}}. Open it on this device.",
+    "error": "Sign-in failed. Please try again."
+  },
+  "inventory": {
+    "empty": "Nothing here yet.",
+    "emptyHint": "Add your first item with the Add button.",
+    "summaryExpired": "{{count}} expired",
+    "summarySoon": "{{count}} expiring soon",
+    "summaryOk": "{{count}} fine",
+    "groupByCategory": "By category",
+    "sortByExpiry": "By expiry",
+    "packages_one": "{{count}} pack",
+    "packages_other": "{{count}} packs",
+    "servingsApprox": "~{{count}} servings",
+    "uncategorized": "Uncategorized",
+    "noResults": "No results."
+  },
+  "item": {
+    "newTitle": "New item",
+    "editTitle": "Edit item",
+    "name": "Name",
+    "namesByLang": "Names by language",
+    "brand": "Brand",
+    "barcode": "Barcode",
+    "category": "Category",
+    "quantity": "Number of packs",
+    "servings": "Servings per pack",
+    "unit": "Unit",
+    "unitPlaceholder": "pcs / g / ml",
+    "expiration": "Expiration date",
+    "note": "Note",
+    "scan": "Scan barcode",
+    "lookupFound": "Product found in database.",
+    "lookupNotFound": "Product not found — fill in manually.",
+    "lookupLoading": "Looking up product…",
+    "learnedFromProfile": "Pre-filled from earlier.",
+    "translating": "Filling in name translations…",
+    "markConsumed": "Used up",
+    "deleteConfirm": "Really delete this item?",
+    "moveTo": "Move to storage",
+    "nameRequired": "Enter at least a name."
+  },
+  "expiry": {
+    "expired": "Expired",
+    "critical": "Critical",
+    "soon": "Soon",
+    "ok": "Fine",
+    "none": "No date",
+    "today": "Expires today",
+    "daysLeft_one": "{{count}} day left",
+    "daysLeft_other": "{{count}} days left",
+    "expiredAgo_one": "Expired {{count}} day ago",
+    "expiredAgo_other": "Expired {{count}} days ago"
+  },
+  "scanner": {
+    "title": "Scan a barcode",
+    "point": "Point the camera at a barcode",
+    "permission": "Please allow camera access.",
+    "noCamera": "No camera available on this device.",
+    "switchCamera": "Switch camera"
+  },
+  "categories": {
+    "title": "Categories",
+    "add": "Add category",
+    "namePlaceholder": "Category name",
+    "default": "default",
+    "deleteConfirm": "Delete category? Its items will become uncategorized.",
+    "empty": "No categories."
+  },
+  "locations": {
+    "title": "Storages",
+    "add": "Add storage",
+    "namePlaceholder": "Storage name",
+    "criticalDays": "Critical (days)",
+    "soonDays": "Soon (days)",
+    "thresholdsHelp": "Below how many days to expiry an item turns red (critical) / amber (soon).",
+    "active": "active",
+    "deleteConfirm": "Delete storage and all its items?",
+    "cannotDeleteLast": "At least one storage must remain."
+  },
+  "lang": { "cs": "Čeština", "en": "English", "zh": "中文" },
+  "setup": {
+    "title": "Finish setup",
+    "body": "The app isn't connected to a database yet. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local and restart the dev server.",
+    "docs": "See the README for step-by-step instructions."
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "app": { "title": "MS Pantry", "tagline": "Evidence potravin" },
+  "nav": {
+    "inventory": "Potraviny",
+    "add": "Přidat",
+    "categories": "Kategorie",
+    "locations": "Sklady",
+    "logout": "Odhlásit"
+  },
+  "common": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "add": "Přidat",
+    "loading": "Načítám…",
+    "saving": "Ukládám…",
+    "search": "Hledat…",
+    "all": "Vše",
+    "optional": "volitelné",
+    "back": "Zpět",
+    "none": "—",
+    "close": "Zavřít"
+  },
+  "auth": {
+    "loginTitle": "Přihlášení",
+    "loginSubtitle": "Zadej e-mail, pošleme ti přihlašovací odkaz.",
+    "emailLabel": "E-mail",
+    "sendLink": "Poslat přihlašovací odkaz",
+    "sending": "Odesílám…",
+    "checkEmail": "Na {{email}} jsme poslali přihlašovací odkaz. Otevři ho na tomto zařízení.",
+    "error": "Přihlášení se nezdařilo. Zkus to znovu."
+  },
+  "inventory": {
+    "empty": "Zatím tu nic není.",
+    "emptyHint": "Přidej první potravinu tlačítkem Přidat.",
+    "summaryExpired": "{{count}} prošlých",
+    "summarySoon": "{{count}} brzy expiruje",
+    "summaryOk": "{{count}} v pořádku",
+    "groupByCategory": "Podle kategorií",
+    "sortByExpiry": "Podle expirace",
+    "packages_one": "{{count}} balení",
+    "packages_few": "{{count}} balení",
+    "packages_other": "{{count}} balení",
+    "servingsApprox": "~{{count}} porcí",
+    "uncategorized": "Bez kategorie",
+    "noResults": "Nic nenalezeno."
+  },
+  "item": {
+    "newTitle": "Nová potravina",
+    "editTitle": "Upravit potravinu",
+    "name": "Název",
+    "namesByLang": "Názvy v jazycích",
+    "brand": "Značka",
+    "barcode": "Čárový kód",
+    "category": "Kategorie",
+    "quantity": "Počet balení",
+    "servings": "Porcí na balení",
+    "unit": "Jednotka",
+    "unitPlaceholder": "ks / g / ml",
+    "expiration": "Datum expirace",
+    "note": "Poznámka",
+    "scan": "Skenovat čárový kód",
+    "lookupFound": "Produkt nalezen v databázi.",
+    "lookupNotFound": "Produkt nenalezen — vyplň ručně.",
+    "lookupLoading": "Hledám produkt…",
+    "learnedFromProfile": "Předvyplněno z dřívějška.",
+    "translating": "Doplňuji překlady názvu…",
+    "markConsumed": "Spotřebováno",
+    "deleteConfirm": "Opravdu smazat tuto potravinu?",
+    "moveTo": "Přesunout do skladu",
+    "nameRequired": "Vyplň aspoň název."
+  },
+  "expiry": {
+    "expired": "Prošlé",
+    "critical": "Kritické",
+    "soon": "Brzy",
+    "ok": "V pořádku",
+    "none": "Bez data",
+    "today": "Expiruje dnes",
+    "daysLeft_one": "Zbývá {{count}} den",
+    "daysLeft_few": "Zbývají {{count}} dny",
+    "daysLeft_other": "Zbývá {{count}} dní",
+    "expiredAgo_one": "Prošlé před {{count}} dnem",
+    "expiredAgo_few": "Prošlé před {{count}} dny",
+    "expiredAgo_other": "Prošlé před {{count}} dny"
+  },
+  "scanner": {
+    "title": "Naskenuj čárový kód",
+    "point": "Namiř kameru na čárový kód",
+    "permission": "Povol prosím přístup ke kameře.",
+    "noCamera": "Kamera není dostupná na tomto zařízení.",
+    "switchCamera": "Přepnout kameru"
+  },
+  "categories": {
+    "title": "Kategorie",
+    "add": "Přidat kategorii",
+    "namePlaceholder": "Název kategorie",
+    "default": "výchozí",
+    "deleteConfirm": "Smazat kategorii? Položky v ní zůstanou bez kategorie.",
+    "empty": "Žádné kategorie."
+  },
+  "locations": {
+    "title": "Sklady",
+    "add": "Přidat sklad",
+    "namePlaceholder": "Název skladu",
+    "criticalDays": "Kritické (dní)",
+    "soonDays": "Brzy (dní)",
+    "thresholdsHelp": "Pod kolik dní do expirace položka zčervená (kritické) / zoranžoví (brzy).",
+    "active": "aktivní",
+    "deleteConfirm": "Smazat sklad i se všemi jeho položkami?",
+    "cannotDeleteLast": "Musí zůstat aspoň jeden sklad."
+  },
+  "lang": { "cs": "Čeština", "en": "English", "zh": "中文" },
+  "setup": {
+    "title": "Dokonči nastavení",
+    "body": "Aplikace zatím není připojená k databázi. Vyplň VITE_SUPABASE_URL a VITE_SUPABASE_ANON_KEY do souboru .env.local a restartuj dev server.",
+    "docs": "Podrobné kroky najdeš v README."
+  }
+}
