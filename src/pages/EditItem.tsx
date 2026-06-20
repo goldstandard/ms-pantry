@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Trash2, Check } from 'lucide-react'
+import { Trash2, Check, PackageOpen, Package } from 'lucide-react'
 import {
   ItemForm,
   emptyItemForm,
@@ -43,6 +43,7 @@ export function EditItem() {
 
   const [form, setForm] = useState<ItemFormState>(() => emptyItemForm(lang))
   const [locationId, setLocationId] = useState<string>('')
+  const [isOpened, setIsOpened] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -50,6 +51,7 @@ export function EditItem() {
     if (item) {
       setForm(itemToForm(item))
       setLocationId(item.location_id)
+      setIsOpened(item.is_opened)
     }
   }, [item])
 
@@ -58,6 +60,12 @@ export function EditItem() {
   }
   if (!item) {
     return <p className="py-10 text-center text-slate-400">{t('common.none')}</p>
+  }
+
+  const toggleOpened = async () => {
+    const next = !isOpened
+    setIsOpened(next)
+    await update.mutateAsync({ id: item.id, is_opened: next })
   }
 
   const save = async () => {
@@ -86,6 +94,7 @@ export function EditItem() {
         expiration_date: form.expiration_date || null,
         image_url: form.image_url || null,
         note: form.note || null,
+        is_opened: isOpened,
       })
       navigate('/')
     } catch (e) {
@@ -113,6 +122,29 @@ export function EditItem() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-slate-900">{t('item.editTitle')}</h1>
+
+      {/* Přepínač otevřeného balení */}
+      <button
+        type="button"
+        onClick={toggleOpened}
+        className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition active:scale-[0.99] ${
+          isOpened
+            ? 'border-orange-300 bg-orange-50 text-orange-700'
+            : 'border-slate-200 bg-white text-slate-600'
+        }`}
+      >
+        {isOpened ? (
+          <PackageOpen className="h-5 w-5 flex-shrink-0 text-orange-500" />
+        ) : (
+          <Package className="h-5 w-5 flex-shrink-0 text-slate-400" />
+        )}
+        <span className="font-medium">
+          {isOpened ? t('item.opened') : t('item.notOpened')}
+        </span>
+        <span className="ml-auto text-xs text-slate-400">
+          {isOpened ? t('item.toggleClosed') : t('item.toggleOpened')}
+        </span>
+      </button>
 
       {/* Přesun do jiného skladu */}
       <div>

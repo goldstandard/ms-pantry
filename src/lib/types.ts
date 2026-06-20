@@ -39,6 +39,7 @@ export interface Item {
   expiration_date: string | null
   image_url: string | null
   note: string | null
+  is_opened: boolean
   created_at: string
   updated_at: string
 }

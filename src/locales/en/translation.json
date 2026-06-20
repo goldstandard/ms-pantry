@@ -70,7 +70,11 @@
     "markConsumed": "Used up",
     "deleteConfirm": "Really delete this item?",
     "moveTo": "Move to storage",
-    "nameRequired": "Enter at least a name."
+    "nameRequired": "Enter at least a name.",
+    "opened": "Opened",
+    "notOpened": "Sealed",
+    "toggleOpened": "Mark as opened",
+    "toggleClosed": "Mark as sealed"
   },
   "expiry": {
     "expired": "Expired",

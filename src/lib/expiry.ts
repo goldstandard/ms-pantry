@@ -25,6 +25,15 @@ export function expiryStatus(
   return 'ok'
 }
 
+/** Řazení: otevřená balení nahoře, uvnitř skupiny podle expirace. */
+export function compareByOpenedThenExpiry(
+  a: { is_opened: boolean; expiration_date: string | null | undefined },
+  b: { is_opened: boolean; expiration_date: string | null | undefined },
+): number {
+  if (a.is_opened !== b.is_opened) return a.is_opened ? -1 : 1
+  return compareByExpiry(a.expiration_date, b.expiration_date)
+}
+
 /** Řazení podle expirace: nejbližší (i prošlé) nahoře, bez data nakonec. */
 export function compareByExpiry(
   a: string | null | undefined,

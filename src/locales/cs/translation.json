@@ -71,7 +71,11 @@
     "markConsumed": "Spotřebováno",
     "deleteConfirm": "Opravdu smazat tuto potravinu?",
     "moveTo": "Přesunout do skladu",
-    "nameRequired": "Vyplň aspoň název."
+    "nameRequired": "Vyplň aspoň název.",
+    "opened": "Otevřeno",
+    "notOpened": "Neotevřeno",
+    "toggleOpened": "Označit jako otevřené",
+    "toggleClosed": "Označit jako neotevřené"
   },
   "expiry": {
     "expired": "Prošlé",

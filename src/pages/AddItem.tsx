@@ -124,6 +124,7 @@ export function AddItem() {
         expiration_date: form.expiration_date || null,
         image_url: form.image_url || null,
         note: form.note || null,
+        is_opened: false,
       })
 
       // Učení: zapamatuj profil podle čárového kódu.

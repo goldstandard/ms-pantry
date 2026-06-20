@@ -69,7 +69,11 @@
     "markConsumed": "已用完",
     "deleteConfirm": "确定删除这件食品吗？",
     "moveTo": "移动到储藏点",
-    "nameRequired": "请至少填写名称。"
+    "nameRequired": "请至少填写名称。",
+    "opened": "已开封",
+    "notOpened": "未开封",
+    "toggleOpened": "标记为已开封",
+    "toggleClosed": "标记为未开封"
   },
   "expiry": {
     "expired": "已过期",

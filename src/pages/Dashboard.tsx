@@ -9,7 +9,7 @@ import { CategoryFilter } from '../components/CategoryFilter'
 import { ItemCard } from '../components/ItemCard'
 import { displayName } from '../lib/displayName'
 import {
-  compareByExpiry,
+  compareByOpenedThenExpiry,
   expiryStatus,
   type ExpiryThresholds,
 } from '../lib/expiry'
@@ -124,7 +124,7 @@ export function Dashboard() {
       ) : view === 'expiry' ? (
         <div className="space-y-2">
           {[...filtered]
-            .sort((a, b) => compareByExpiry(a.expiration_date, b.expiration_date))
+            .sort((a, b) => compareByOpenedThenExpiry(a, b))
             .map((it) => (
               <ItemCard key={it.id} item={it} thresholds={thresholds} />
             ))}
@@ -201,7 +201,7 @@ function GroupedByCategory({
             </div>
             <div className="space-y-2">
               {[...g.items]
-                .sort((a, b) => compareByExpiry(a.expiration_date, b.expiration_date))
+                .sort((a, b) => compareByOpenedThenExpiry(a, b))
                 .map((it) => (
                   <ItemCard key={it.id} item={it} thresholds={thresholds} />
                 ))}
