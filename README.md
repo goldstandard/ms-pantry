@@ -13,7 +13,7 @@ Tohle je **vstupní soubor**. Hlubší dokumentace je v sekci [Dokumentace](#dok
 
 ## Co to umí
 
-- 📷 **Sken čárového kódu** (kamerou nebo ručním zadáním čísla) → název, značka, obrázek a návrh kategorie; vyhledává postupně v Open Food Facts → UPCitemdb
+- 📷 **Sken čárového kódu** (kamerou nebo ručním zadáním čísla) → název, značka, obrázek a návrh kategorie; vyhledává postupně v Open Food Facts → UPCitemdb → Go-UPC
 - 📅 **Hlídání expirace** barevně, s prahy **zvlášť pro každý sklad**
 - 🏠 **Oddělené sklady** (Chata, Domácnost…) — evidence se nemíchají
 - 🍽️ **Porce na balení** + **učení**: appka si podle kódu pamatuje porce a kategorii
@@ -110,6 +110,21 @@ Spusť v Supabase SQL Editoru:
 ALTER TABLE public.items
   ADD COLUMN IF NOT EXISTS is_opened boolean NOT NULL DEFAULT false;
 ```
+
+---
+
+## Volitelné: Go-UPC (třetí fallback pro čárové kódy)
+
+Pokud Open Food Facts ani UPCitemdb produkt nenajdou, appka zkusí Go-UPC (150 req/měsíc).
+Klíč je dostupný zdarma na vyžádání e-mailem na [go-upc.com](https://go-upc.com).
+
+1. Přidej do `.env.local`:
+   ```
+   VITE_GO_UPC_KEY=tvuj-klic
+   ```
+2. Na Vercelu: **Settings → Environment Variables** → přidej `VITE_GO_UPC_KEY` → Redeploy.
+
+Bez klíče appka funguje normálně — Go-UPC se tiše přeskočí.
 
 ---
 

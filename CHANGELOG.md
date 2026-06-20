@@ -15,8 +15,9 @@ Typy změn: **Added** (přidáno) · **Changed** (změněno) · **Deprecated** (
 ### Added
 
 - **Fallback chain pro vyhledávání čárového kódu**: po selhání Open Food Facts se pokus
-  opakuje přes **UPCitemdb** (zdarma, 100 req/den, bez API klíče). Výsledek prvního
-  úspěšného zdroje se zpracuje stejně jako dřív (DeepL překlad, učení).
+  opakuje přes **UPCitemdb** (zdarma, 100 req/den, bez API klíče) a pak přes **Go-UPC**
+  (150 req/měsíc; klíč na vyžádání e-mailem, uložit jako `VITE_GO_UPC_KEY`). Výsledek
+  prvního úspěšného zdroje se zpracuje stejně jako dřív (DeepL překlad, učení).
 - **Indikátor otevřeného balení** (`is_opened`): položka jde označit jako „Otevřeno"
   — tlačítko přepínač v `EditItem` (oranžové = otevřeno, bílé = neotevřeno). Na kartě
   v seznamu se zobrazí oranžová ikona a text „Otevřeno". Otevřená balení se řadí

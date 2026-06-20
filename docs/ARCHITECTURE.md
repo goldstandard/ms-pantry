@@ -345,7 +345,9 @@ vyžadují síť** — plně offline-first režim je v roadmapě, ne v MVP. Sken
 | Služba | Účel | Klíč | Selhání |
 |---|---|---|---|
 | **Supabase** | DB, auth, RLS, edge functions | publishable key (klient) | appka nefunkční bez env → Setup obrazovka |
-| **Open Food Facts** | dohledání produktu | žádný | tichý fallback na ruční vyplnění |
+| **Open Food Facts** | dohledání produktu (fallback #1) | žádný | přechod na UPCitemdb |
+| **UPCitemdb** | dohledání produktu (fallback #2) | žádný (100 req/den) | přechod na Go-UPC |
+| **Go-UPC** | dohledání produktu (fallback #3) | `VITE_GO_UPC_KEY` (150 req/měsíc) | tichý fallback na ruční vyplnění |
 | **DeepL** | překlad názvů | server-side secret | tichý fallback — názvy bez překladu |
 | **Vercel** | hosting | — | jen pro produkční nasazení |
 
