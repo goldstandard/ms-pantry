@@ -20,11 +20,41 @@ Typy změn: **Added** (přidáno) · **Changed** (změněno) · **Deprecated** (
 
 ---
 
+## [0.1.1] — 2026-06-20
+
+Nasazení do produkce, řešení problémů s novým Supabase API Keys v2 a přidání
+ručního zadávání čárových kódů jako alternativy ke kamerové čtečce.
+
+### Added
+
+- **Ruční zadání čárového kódu**: textové pole pod tlačítkem „Skenovat" v `ItemForm`
+  umožňuje zadat kód přes klávesnici; po potvrzení (Enter nebo tlačítko Hledat) se
+  spustí stejný lookup jako při kamerovém skenování (Open Food Facts + product_profiles
+  + překlad). Přeloženo do cs/en/zh.
+- **`start.bat`**: Windows spouštěč — spustí `npm run dev` a rovnou otevře prohlížeč.
+- **Produkční nasazení** na Vercel:
+  `https://ms-pantry-oyrt7fqn7-goldstandard.vercel.app`
+- **DeepL Edge Function** nasazena a ověřena v produkci; klíč uložen jako Supabase
+  secret `DEEPL_API_KEY`.
+
+### Fixed
+
+- **Supabase Data API — 403 Forbidden**: nové projekty s API Keys v2 (`sb_publishable_`)
+  vyžadují explicitní vystavení tabulek v Integrations → Data API → Settings →
+  Exposed tables. Bez tohoto nastavení REST API odmítá všechny requesty s 403 i pro
+  přihlášeného uživatele. Zdokumentováno v README (sekce Řešení problémů).
+- **Seed výchozích dat**: trigger `on_auth_user_created` neproběhne, pokud se
+  `schema.sql` spustilo před prvním přihlášením. Přidána záchranná instrukce do README —
+  ruční volání `SELECT public.seed_defaults_for_user('uuid')` v SQL Editoru.
+- **Port magic-linku**: `emailRedirectTo: window.location.origin` zajišťuje, že
+  magic-link vždy přesměruje na port, ze kterého byl odeslán (5173 nebo 5174).
+
+---
+
 ## [0.1.0] — 2026-06-20
 
 První funkční verze (MVP). Kompletní implementace, build prochází, UI a přepínání
-jazyků ověřeno na dev serveru. Plné end-to-end ověření vyžaduje připojený Supabase
-projekt (viz [README](README.md)).
+jazyků ověřeno na dev serveru.
 
 ### Added
 
@@ -55,5 +85,6 @@ projekt (viz [README](README.md)).
 - Row Level Security na všech tabulkách (`user_id = auth.uid()`).
 - DeepL API klíč drží Edge Function jako server-side secret, nikdy není v prohlížeči.
 
-[Unreleased]: https://example.com/compare/v0.1.0...HEAD
-[0.1.0]: https://example.com/releases/tag/v0.1.0
+[Unreleased]: https://github.com/goldstandard/ms-pantry/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/goldstandard/ms-pantry/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/goldstandard/ms-pantry/releases/tag/v0.1.0

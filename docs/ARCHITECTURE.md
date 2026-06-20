@@ -1,6 +1,6 @@
 # Architektura — MS Pantry
 
-> Stav k verzi **0.1.0** (2026-06-20). Tento dokument popisuje, **jak je aplikace
+> Stav k verzi **0.1.1** (2026-06-20). Tento dokument popisuje, **jak je aplikace
 > postavená**. Pro aktuální stav vývoje viz [STATUS.md](STATUS.md), pro původní
 > záměr [PLAN.md](PLAN.md).
 
@@ -48,7 +48,7 @@ zprostředkovaně přes Supabase Edge Function, aby klíč nebyl v prohlížeči
 └─────────┘
 ```
 
-**Klíčový princip:** klient mluví se Supabase přímo přes anon key; data chrání
+**Klíčový princip:** klient mluví se Supabase přímo přes publishable key; data chrání
 **Row Level Security** na úrovni databáze (každý uživatel vidí jen své řádky). Není
 potřeba žádná serverová mezivrstva kromě jedné Edge Function pro skrytí DeepL klíče.
 
@@ -83,6 +83,7 @@ Martin_MS-Pantry/
 ├─ tailwind.config.js         brand barvy
 ├─ tsconfig.json              jeden config (src + vite.config.ts), noEmit
 ├─ .env.example               vzor env proměnných
+├─ start.bat                  Windows spouštěč (npm run dev + otevření prohlížeče)
 │
 ├─ public/
 │  └─ pwa-icon.svg            ikona aplikace (manifest + favicon)
@@ -114,7 +115,7 @@ Martin_MS-Pantry/
 │  │  ├─ Nav.tsx              Layout (header + spodní navigace + <Outlet/>)
 │  │  ├─ LanguageSwitcher.tsx přepínač jazyka
 │  │  ├─ LocationSwitcher.tsx přepínač skladu
-│  │  ├─ ItemForm.tsx         formulář položky (název ve 3 jazycích, porce, …)
+│  │  ├─ ItemForm.tsx         formulář položky (název ve 3 jazycích, porce, ruční kód…)
 │  │  ├─ ItemCard.tsx         karta položky v seznamu
 │  │  ├─ ExpiryBadge.tsx      barevný štítek stavu expirace
 │  │  ├─ CategoryFilter.tsx   vodorovné pilulky kategorií
@@ -123,7 +124,7 @@ Martin_MS-Pantry/
 │  └─ pages/
 │     ├─ Login.tsx            magic-link přihlášení
 │     ├─ Dashboard.tsx        seznam potravin (seskupení / agregace / hledání)
-│     ├─ AddItem.tsx          přidání: scan → OFF → profil → překlad → uložení
+│     ├─ AddItem.tsx          přidání: scan/ruční kód → OFF → profil → překlad → uložení
 │     ├─ EditItem.tsx         úprava / přesun / spotřebování / smazání
 │     ├─ Categories.tsx       správa kategorií
 │     └─ Locations.tsx        správa skladů a jejich prahů
@@ -171,7 +172,7 @@ Vícejazyčné texty jsou v `jsonb` jako `{ "cs": "...", "en": "...", "zh": "...
 |---|---|---|
 | `id` | uuid PK | |
 | `user_id` | uuid | default `auth.uid()` |
-| `location_id` | uuid | FK → locations (cascade) — ke kterému skladu patří |
+| `location_id` | uuid | FK → locations (cascade) |
 | `name_i18n` | jsonb | název ve 3 jazycích |
 | `original_lang` | text | jazyk pořízení názvu (zdroj překladu) |
 | `brand` | text | značka |
@@ -214,12 +215,13 @@ globálně pro uživatele (pomáhá Chatě i Domácnosti).
 ## 5. Bezpečnost
 
 - **Row Level Security** je zapnutá na všech čtyřech tabulkách. Politika je u všech
-  stejná: `user_id = auth.uid()` pro `using` i `with check`. Klient tedy fyzicky
+  stejná: `user_id = auth.uid()` pro `using` i `with check`. Klient fyzicky
   nemůže číst ani měnit cizí řádky, i kdyby obešel UI.
 - **`user_id`** se nikdy neposílá z klienta — má v DB `default auth.uid()`. To zároveň
   zjednodušuje upserty (`product_profiles`) a brání podvržení cizího `user_id`.
-- **Anon key** v prohlížeči je v pořádku — je to veřejný klíč určený pro klienta;
-  veškerou ochranu dělá RLS.
+- **Publishable key** (`sb_publishable_...`) v prohlížeči je v pořádku — je určený
+  pro klienta; veškerou ochranu dělá RLS. Starší formát byl JWT (`eyJ...`), nový
+  formát je opaque, ale funguje stejně přes Supabase API gateway.
 - **Magic-link auth**: bez hesla, session v `localStorage`, auto-refresh tokenu.
 - **DeepL klíč** žije jen jako secret Edge Function (`DEEPL_API_KEY`), do bundle se
   nikdy nedostane.
@@ -255,16 +257,22 @@ přečte. `product_profiles` se nečte přes React Query, ale přímými funkcem
 ## 7. Klíčové toky
 
 ### 7.1 Přihlášení
-`Login` → `supabase.auth.signInWithOtp({ email })` → e-mail s odkazem → po kliknutí
-`detectSessionInUrl` nastaví session → `onAuthStateChange` aktualizuje `AuthProvider`.
+`Login` → `supabase.auth.signInWithOtp({ email, emailRedirectTo: window.location.origin })`
+→ e-mail s odkazem → po kliknutí `detectSessionInUrl` nastaví session →
+`onAuthStateChange` aktualizuje `AuthProvider`.
 Při úplně první registraci DB trigger `handle_new_user` naseeduje sklady a kategorie.
+
+> **Pozn. k portům:** Vite defaultně bere 5173; je-li obsazený, vezme 5174.
+> `emailRedirectTo` se posílá dynamicky jako `window.location.origin`, takže magic-link
+> vždy přesměruje zpátky na port, ze kterého byl odeslán. Supabase musí mít daný port
+> v **Redirect URLs** (Auth → URL Configuration).
 
 ### 7.2 Přidání položky (`AddItem`)
 ```
-Sken čárového kódu (ZXing)
+Sken kamerou (ZXing) nebo ruční zadání kódu do textového pole
    │
    ├─ 1) fetchProductProfile(barcode)   ← naučené hodnoty (porce, kategorie, název)
-   ├─ 2) lookupBarcode(barcode)         ← Open Food Facts (název*, značka, obrázek, kategorie)
+   ├─ 2) lookupBarcode(barcode)         ← Open Food Facts (název, značka, obrázek, kategorie)
    │        mapOffCategory(tags) → slug → category_id
    ├─ 3) translateMissing(name_i18n)    ← doplní chybějící jazyky (DeepL)
    │
@@ -273,7 +281,7 @@ Uživatel doplní expiraci, potvrdí kategorii a porce → Uložit
    ├─ items.insert(...)
    └─ upsertProductProfile(...)          ← učení: zapamatuj porce/kategorii/název
 ```
-\* Profil i OFF se **slučují** (`mergeNames`) — existující hodnoty se nepřepisují.
+Profil i OFF se **slučují** (`mergeNames`) — existující hodnoty se nepřepisují.
 
 ### 7.3 Výpočet expirace (`lib/expiry.ts`)
 `daysUntil(date)` → porovná s prahy **aktivního skladu**:
@@ -332,23 +340,32 @@ vyžadují síť** — plně offline-first režim je v roadmapě, ne v MVP. Sken
 
 | Služba | Účel | Klíč | Selhání |
 |---|---|---|---|
-| **Supabase** | DB, auth, RLS, edge functions | anon key (klient), service na serveru | appka nefunkční bez env → Setup obrazovka |
+| **Supabase** | DB, auth, RLS, edge functions | publishable key (klient) | appka nefunkční bez env → Setup obrazovka |
 | **Open Food Facts** | dohledání produktu | žádný | tichý fallback na ruční vyplnění |
 | **DeepL** | překlad názvů | server-side secret | tichý fallback — názvy bez překladu |
 | **Vercel** | hosting | — | jen pro produkční nasazení |
+
+### Poznámka k Supabase API Keys v2
+
+Nové projekty Supabase (od 2025) používají klíče formátu `sb_publishable_...` místo
+dřívějšího JWT (`eyJ...`). Tyto klíče fungují stejně jako anon key, ale **vyžadují,
+aby tabulky byly explicitně vystaveny v Data API** (Integrations → Data API → Settings
+→ Exposed tables). Bez tohoto nastavení REST API vrací 403 i pro přihlášeného uživatele.
 
 ---
 
 ## 11. Build a nasazení
 
-- **Dev:** `npm run dev` (Vite, `host: true` → dostupné i z mobilu na LAN).
+- **Dev:** `npm run dev` nebo `start.bat` (Windows). Vite bere port 5173, je-li obsazený,
+  sáhne po 5174. `host: true` → dostupné i z mobilu na LAN.
 - **Build:** `npm run build` = `tsc --noEmit` (typecheck) + `vite build` → `dist/`.
 - **Code-splitting:** `BarcodeScanner` (ZXing) je `lazy()` → samostatný chunk
   (~400 kB) se stáhne až při prvním skenování; hlavní bundle ~530 kB.
 - **Env proměnné:** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (build-time, prefix
   `VITE_` je vystavený klientovi — proto tam patří jen veřejné hodnoty).
-- **Edge Function:** `supabase functions deploy translate` + secret `DEEPL_API_KEY`.
-- **Hosting:** statický výstup `dist/` na Vercel; do Supabase Auth přidat produkční URL.
+- **Edge Function:** `npx supabase functions deploy translate` + secret `DEEPL_API_KEY`.
+- **Hosting:** statický výstup `dist/` na Vercel; do Supabase Auth přidat produkční URL
+  jako Redirect URL.
 
 ---
 
@@ -361,9 +378,10 @@ vyžadují síť** — plně offline-first režim je v roadmapě, ne v MVP. Sken
   (u osobní spíže zanedbatelné).
 - **Učení na úrovni `barcode`**, ne názvu — barcode je nejstabilnější identifikátor
   balení. Profil je sdílený napříč sklady.
-- **Magic-link** místo hesla — méně tření, žádné heslo k úniku. Sdílení s rodinou =
-  sdílení jednoho účtu; víceuživatelská „domácnost" je v roadmapě.
+- **Magic-link** místo hesla — méně tření, žádné heslo k úniku.
 - **Hrubší prahy expirace per-sklad** — chata se nenavštěvuje často (14/60), domácnost
   ano (3/14); proto je práh konfigurace skladu, ne globální konstanta.
+- **Ruční zadání kódu vedle kamerového skeneru** — kamera notebooku nemusí mít dostatečné
+  rozlišení nebo ostření pro čárové kódy; textové pole umožní lookup bez nutnosti kamery.
 - **Velikost bundle** — i18next + supabase-js + react-query tvoří většinu; skener je
   odštěpený. Dál by šlo lazy-loadovat jednotlivé routy (roadmapa).

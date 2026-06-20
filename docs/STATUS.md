@@ -1,84 +1,89 @@
 # Stav vývoje — MS Pantry
 
-> Verze **0.1.0** · aktualizováno **2026-06-20**
+> Verze **0.1.1** · aktualizováno **2026-06-20**
 > Souhrn toho, co je hotové, ověřené a co zbývá. Historie změn je v
 > [CHANGELOG.md](../CHANGELOG.md).
 
 ## Shrnutí
 
-První funkční verze (MVP) je **kompletně naprogramovaná**. `npm run build` prochází
-bez chyb (typecheck + bundle). UI a přepínání jazyků jsou ověřené na dev serveru.
-**Plné end-to-end ověření vyžaduje připojený Supabase projekt** — viz
-[kroky na uživateli](#kroky-na-uživateli).
+MVP je **kompletně nasazený a end-to-end ověřený**. Appka běží v produkci na Vercelu,
+databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
+
+- **Produkce:** https://ms-pantry-oyrt7fqn7-goldstandard.vercel.app
+- **GitHub:** https://github.com/goldstandard/ms-pantry
+- **Databáze:** Supabase projekt `nyyyjsgmtxhlivslkmel`
 
 ## Stav funkcí
 
 | Funkce | Stav | Pozn. |
 |---|---|---|
-| PWA skeleton (Vite, Tailwind, service worker, manifest) | ✅ hotovo | instalovatelné |
-| Trojjazyčné UI (cs / en / zh) + přepínač | ✅ hotovo a ověřeno | |
-| Magic-link přihlášení (Supabase Auth) | ✅ hotovo | runtime test čeká na DB |
-| Datový model + RLS + seed (schema.sql) | ✅ hotovo | spustit v Supabase |
-| Oddělené sklady + přepínač + per-sklad prahy | ✅ hotovo | runtime test čeká na DB |
-| CRUD potravin | ✅ hotovo | runtime test čeká na DB |
-| Dashboard: seskupení podle kategorií + agregace | ✅ hotovo | |
-| Dashboard: plochý pohled podle expirace | ✅ hotovo | |
-| Hledání + filtr kategorií | ✅ hotovo | hledá přes všechny jazyky |
-| Barevné hlídání expirace (prahy ze skladu) | ✅ hotovo | |
-| Porce na balení | ✅ hotovo | |
-| Učení podle čárového kódu (product_profiles) | ✅ hotovo | runtime test čeká na DB |
-| Skenování čárových kódů (ZXing, lazy) | ✅ hotovo | vyžaduje HTTPS/localhost + kameru |
-| Open Food Facts lookup + mapování kategorií | ✅ hotovo | |
-| Překlad názvů (Edge Function + DeepL) | ✅ hotovo | vyžaduje deploy funkce + klíč |
-| Správa kategorií | ✅ hotovo | |
-| Správa skladů a prahů | ✅ hotovo | |
-| Dokumentace (README, architektura, plán, changelog) | ✅ hotovo | |
+| PWA skeleton (Vite, Tailwind, service worker, manifest) | ✅ ověřeno | instalovatelné na mobil |
+| Trojjazyčné UI (cs / en / zh) + přepínač | ✅ ověřeno | |
+| Magic-link přihlášení (Supabase Auth) | ✅ ověřeno | |
+| Datový model + RLS + seed (schema.sql) | ✅ ověřeno | |
+| Oddělené sklady + přepínač + per-sklad prahy | ✅ ověřeno | |
+| CRUD potravin | ✅ ověřeno | |
+| Dashboard: seskupení podle kategorií + agregace | ✅ ověřeno | |
+| Dashboard: plochý pohled podle expirace | ✅ ověřeno | |
+| Hledání + filtr kategorií | ✅ ověřeno | hledá přes všechny jazyky |
+| Barevné hlídání expirace (prahy ze skladu) | ✅ ověřeno | |
+| Porce na balení | ✅ ověřeno | |
+| Učení podle čárového kódu (product_profiles) | ✅ ověřeno | |
+| Skenování čárových kódů kamerou (ZXing, lazy) | ✅ hotovo | ověřit na mobilu v produkci |
+| Ruční zadání čárového kódu | ✅ ověřeno | pole pod tlačítkem Skenovat |
+| Open Food Facts lookup + mapování kategorií | ✅ ověřeno | |
+| Překlad názvů (Edge Function + DeepL) | ✅ ověřeno | nasazeno, funkční |
+| Správa kategorií | ✅ ověřeno | |
+| Správa skladů a prahů | ✅ ověřeno | |
+| Produkční nasazení (Vercel) | ✅ nasazeno | |
+| `start.bat` spouštěč (Windows) | ✅ hotovo | |
+| Dokumentace | ✅ hotovo | aktualizováno po nasazení |
 
-## Co je ověřené vs. neověřené
+## Co je ověřené
 
-**Ověřeno (dev server):**
+**Ověřeno end-to-end:**
 - Build prochází (`tsc --noEmit` + `vite build`), žádné typové chyby.
-- Aplikace se načte a vyrenderuje.
-- Bez env proměnných korektně ukáže Setup obrazovku.
-- Přepínání jazyků cs ↔ en ↔ zh reálně mění texty UI.
-- Code-splitting skeneru funguje (samostatný chunk).
+- Přihlášení magic-linkem, vznik a obnovení session.
+- CRUD položek, kategorií, skladů.
+- Lookup přes Open Food Facts (barcode → předvyplnění názvu, značky, kategorie).
+- Ruční zadání čárového kódu — spouští stejný lookup jako kamera.
+- Učení porcí: druhé zadání stejného kódu předvyplní dříve potvrzené hodnoty.
+- Oddělené sklady — položky se nemíchají.
+- Různé prahy expirace per-sklad, správné barevné stavy.
+- Doplnění překladů přes DeepL (funkce nasazena, ověřeno).
+- Přepínání jazyků cs ↔ en ↔ zh, volba přežije reload.
+- Seskupení + agregace, filtr, hledání přes všechny jazyky.
+- PWA instalovatelná z prohlížeče na produkci.
 
-**Zatím neověřeno (vyžaduje živý Supabase):**
-- Přihlášení magic-linkem a vznik session.
-- Vytvoření/čtení/úprava/mazání položek, kategorií, skladů.
-- Skenování reálného čárového kódu → OFF lookup → předvyplnění.
-- Učení porcí při druhém naskenování stejného kódu.
-- Rozdílné chování prahů mezi sklady na stejném datu.
-- Doplnění překladů názvů přes DeepL.
-- Synchronizace mezi dvěma zařízeními.
+**Zatím neověřeno v ostrém provozu:**
+- Kamerové skenování na mobilu (rate limit magic-linků bránil dokončení testu;
+  kód je správný, otestovat při běžném používání).
+- Synchronizace dat simultánně na dvou zařízeních.
 
-## Kroky na uživateli
+## Kroky na uživateli — stav
 
-Tyto kroky nejde udělat za uživatele (vyžadují jeho účty). Detailní postup v
-[README.md](../README.md).
+Všechny povinné i volitelné kroky jsou dokončeny:
 
-1. **Supabase** (povinné): projekt → spustit `supabase/schema.sql` → vyplnit `.env.local`.
-2. **DeepL** (volitelné): API klíč → secret + deploy Edge Function `translate`.
-3. **Vercel** (pro mobil/produkci): nasazení + env proměnné + redirect URL v Supabase.
+1. ✅ **Supabase**: projekt vytvořen, `schema.sql` spuštěn, tabulky vystaveny v Data API,
+   `.env.local` vyplněn.
+2. ✅ **DeepL**: API klíč nastaven jako secret, Edge Function `translate` nasazena.
+3. ✅ **Vercel**: nasazení hotové, env proměnné nastaveny, redirect URL přidána.
 
 ## Známá omezení / technický dluh
 
-- **Offline jen pro app shell** — zápis dat a překlad vyžadují síť (plně offline-first
-  je v roadmapě).
-- **PWA ikona je jen SVG** — moderní prohlížeče zvládnou, ale pro maximální kompatibilitu
-  by se hodily i PNG 192/512.
-- **Bundle ~530 kB** (gzip ~150 kB bez skeneru) — únosné, šlo by dál dělit po routách.
-- **Bez automatických testů** — zatím jen typová kontrola; logika v `lib/` (expiry,
-  displayName, categories) je čistá a snadno testovatelná, testy nejsou napsané.
-- **Bez upozornění na pozadí** — hlídání expirace je jen vizuální (dle zadání).
-- **Magic-link odkazy** v changelogu/README jsou placeholdery (`example.com`) do doby
-  než vznikne git repozitář / produkční URL.
+- **Offline jen pro app shell** — zápis dat a překlad vyžadují síť (offline-first v roadmapě).
+- **PWA ikona je jen SVG** — moderní prohlížeče ji přijmou; PNG 192/512 by zvýšilo kompatibilitu.
+- **Bundle ~530 kB** (gzip ~150 kB bez skeneru) — únosné; lazy-loading po routách v roadmapě.
+- **Bez automatických testů** — typová kontrola ano; unit testy logiky v `lib/` v roadmapě.
+- **Bez push upozornění** — hlídání expirace je vizuální, dle zadání.
+- **Nový formát Supabase API klíčů** (`sb_publishable_`) vyžaduje explicitní vystavení
+  tabulek v Data API — zdokumentováno v README, sekce Řešení problémů.
 
 ## Roadmapa (mimo MVP)
 
 - Plně offline-first režim (lokální cache + fronta změn při výpadku sítě).
-- Push / e-mail upozornění na blížící se expiraci (vyžaduje běžící službu/cron).
+- Push / e-mail upozornění na blížící se expiraci.
 - Sdílená „domácnost" pro více uživatelů.
 - Statistiky plýtvání + nákupní seznam z docházejících zásob.
 - Jednotkové testy logiky v `lib/`.
-- Generování PNG ikon a lazy-loading po routách.
+- Generování PNG ikon, lazy-loading po routách.
