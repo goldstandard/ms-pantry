@@ -14,6 +14,12 @@ Typy změn: **Added** (přidáno) · **Changed** (změněno) · **Deprecated** (
 
 ### Added
 
+- **Indikátor otevřeného balení** (`is_opened`): položka jde označit jako „Otevřeno"
+  — tlačítko přepínač v `EditItem` (oranžové = otevřeno, bílé = neotevřeno). Na kartě
+  v seznamu se zobrazí oranžová ikona a text „Otevřeno". Otevřená balení se řadí
+  automaticky na první místo v rámci kategorie i v pohledu podle expirace.
+  Vyžaduje SQL migraci: `ALTER TABLE public.items ADD COLUMN IF NOT EXISTS is_opened boolean NOT NULL DEFAULT false;`
+
 ### Changed
 
 ### Fixed

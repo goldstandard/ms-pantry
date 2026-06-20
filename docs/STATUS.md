@@ -1,6 +1,6 @@
 # Stav vývoje — MS Pantry
 
-> Verze **0.1.1** · aktualizováno **2026-06-20**
+> Verze **0.1.2-dev** · aktualizováno **2026-06-20**
 > Souhrn toho, co je hotové, ověřené a co zbývá. Historie změn je v
 > [CHANGELOG.md](../CHANGELOG.md).
 
@@ -37,7 +37,8 @@ databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
 | Správa skladů a prahů | ✅ ověřeno | |
 | Produkční nasazení (Vercel) | ✅ nasazeno | |
 | `start.bat` spouštěč (Windows) | ✅ hotovo | |
-| Dokumentace | ✅ hotovo | aktualizováno po nasazení |
+| Indikátor otevřeného balení (`is_opened`) | ✅ hotovo | vyžaduje SQL migraci — viz níže |
+| Dokumentace | ✅ hotovo | průběžně aktualizováno |
 
 ## Co je ověřené
 
@@ -59,6 +60,13 @@ databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
 - Kamerové skenování na mobilu (rate limit magic-linků bránil dokončení testu;
   kód je správný, otestovat při běžném používání).
 - Synchronizace dat simultánně na dvou zařízeních.
+
+**Vyžaduje ruční krok v Supabase:**
+- Indikátor otevřeného balení — ke stávající DB je potřeba spustit v SQL Editoru:
+  ```sql
+  ALTER TABLE public.items
+    ADD COLUMN IF NOT EXISTS is_opened boolean NOT NULL DEFAULT false;
+  ```
 
 ## Kroky na uživateli — stav
 

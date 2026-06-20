@@ -17,6 +17,7 @@ Tohle je **vstupní soubor**. Hlubší dokumentace je v sekci [Dokumentace](#dok
 - 📅 **Hlídání expirace** barevně, s prahy **zvlášť pro každý sklad**
 - 🏠 **Oddělené sklady** (Chata, Domácnost…) — evidence se nemíchají
 - 🍽️ **Porce na balení** + **učení**: appka si podle kódu pamatuje porce a kategorii
+- 📦 **Otevřené balení**: označíš, které balení je načaté — v seznamu se zobrazí oranžově a řadí se na první místo
 - 📊 **Agregace** na dashboardu — součet balení a porcí v každé kategorii
 - 🌍 **Tři jazyky** včetně překladu názvů položek (DeepL)
 - ☁️ **Cloud sync** (Supabase) — naskenuješ na notebooku, vidíš na mobilu
@@ -100,6 +101,15 @@ SELECT public.seed_defaults_for_user('zde-vloz-uuid');
 
 Zkontroluj, že **Site URL** v Supabase Auth odpovídá skutečnému portu dev serveru.
 Vite zkusí 5173, pokud je obsazený, vezme 5174 — oba musí být v **Redirect URLs**.
+
+### Indikátor otevřeného balení nefunguje / chyba při ukládání
+
+Sloupec `is_opened` není součástí původního `schema.sql` — byl přidán jako migrace.
+Spusť v Supabase SQL Editoru:
+```sql
+ALTER TABLE public.items
+  ADD COLUMN IF NOT EXISTS is_opened boolean NOT NULL DEFAULT false;
+```
 
 ---
 
