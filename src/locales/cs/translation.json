@@ -61,6 +61,8 @@
     "expiration": "Datum expirace",
     "note": "Poznámka",
     "scan": "Skenovat čárový kód",
+    "barcodeManual": "Zadat kód ručně…",
+    "barcodeSearch": "Hledat",
     "lookupFound": "Produkt nalezen v databázi.",
     "lookupNotFound": "Produkt nenalezen — vyplň ručně.",
     "lookupLoading": "Hledám produkt…",

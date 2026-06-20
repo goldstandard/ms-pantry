@@ -60,6 +60,8 @@
     "expiration": "Expiration date",
     "note": "Note",
     "scan": "Scan barcode",
+    "barcodeManual": "Enter code manually…",
+    "barcodeSearch": "Search",
     "lookupFound": "Product found in database.",
     "lookupNotFound": "Product not found — fill in manually.",
     "lookupLoading": "Looking up product…",

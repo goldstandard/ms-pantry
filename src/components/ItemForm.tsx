@@ -43,12 +43,14 @@ export function ItemForm({
   onChange,
   categories,
   onScan,
+  onDetected,
   banner,
 }: {
   value: ItemFormState
   onChange: (next: ItemFormState) => void
   categories: Category[]
   onScan?: () => void
+  onDetected?: (code: string) => void
   banner?: ReactNode
 }) {
   const { t, i18n } = useTranslation()
@@ -62,13 +64,39 @@ export function ItemForm({
   return (
     <div className="space-y-4">
       {onScan && (
-        <button
-          type="button"
-          onClick={onScan}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 font-medium text-white active:scale-[0.99]"
-        >
-          <ScanLine className="h-5 w-5" /> {t('item.scan')}
-        </button>
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={onScan}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 font-medium text-white active:scale-[0.99]"
+          >
+            <ScanLine className="h-5 w-5" /> {t('item.scan')}
+          </button>
+          <div className="flex gap-2">
+            <input
+              className={inputCls}
+              placeholder={t('item.barcodeManual')}
+              value={value.barcode}
+              onChange={(e) => set({ barcode: e.target.value })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && value.barcode.trim() && onDetected) {
+                  e.preventDefault()
+                  onDetected(value.barcode.trim())
+                }
+              }}
+            />
+            {onDetected && (
+              <button
+                type="button"
+                onClick={() => { if (value.barcode.trim()) onDetected(value.barcode.trim()) }}
+                disabled={!value.barcode.trim()}
+                className="rounded-lg border border-slate-300 px-3 text-sm font-medium text-slate-600 disabled:opacity-40"
+              >
+                {t('item.barcodeSearch')}
+              </button>
+            )}
+          </div>
+        </div>
       )}
 
       {banner}

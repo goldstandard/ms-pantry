@@ -155,6 +155,7 @@ export function AddItem() {
         onChange={setForm}
         categories={categories}
         onScan={() => setScanning(true)}
+        onDetected={handleDetected}
         banner={
           banner ? (
             <div className="flex items-center gap-2 rounded-lg bg-brand/10 px-3 py-2 text-sm text-brand-dark">

@@ -59,6 +59,8 @@
     "expiration": "到期日期",
     "note": "备注",
     "scan": "扫描条形码",
+    "barcodeManual": "手动输入条码…",
+    "barcodeSearch": "搜索",
     "lookupFound": "已在数据库中找到产品。",
     "lookupNotFound": "未找到产品——请手动填写。",
     "lookupLoading": "正在查询产品…",
