@@ -62,7 +62,7 @@ async function lookupOpenFoodFacts(barcode: string): Promise<OffProduct | null> 
   }
 }
 
-// ─── UPCitemdb (fallback) ─────────────────────────────────────────────────────
+// ─── UPCitemdb (fallback #1) ──────────────────────────────────────────────────
 // Free trial: 100 req/den, bez API klíče.
 // Docs: https://www.upcitemdb.com/api/explorer#!/lookup/get_trial_lookup
 
@@ -92,7 +92,46 @@ async function lookupUpcitemdb(barcode: string): Promise<OffProduct | null> {
     names: { en: title },
     brand,
     imageUrl: images[0] ?? null,
-    // Předáme jako kategorie tag, aby ho zpracoval stávající mapOffCategory.
+    categoryTags: category ? [`en:${category.toLowerCase().replace(/\s+/g, '-')}`] : [],
+    quantity: null,
+  }
+}
+
+// ─── Go-UPC (fallback #2) ─────────────────────────────────────────────────────
+// Free: 150 req/měsíc; klíč na vyžádání e-mailem na go-upc.com.
+// Klíč uložit jako VITE_GO_UPC_KEY v .env.local a v nastavení Vercelu.
+// Bez klíče se tento fallback tiše přeskočí.
+
+async function lookupGoUpc(barcode: string): Promise<OffProduct | null> {
+  const key = import.meta.env.VITE_GO_UPC_KEY as string | undefined
+  if (!key) return null
+
+  const url = `https://go-upc.com/api/v1/code/${encodeURIComponent(barcode)}`
+  let data: { product?: Record<string, unknown> }
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${key}`, Accept: 'application/json' },
+    })
+    if (!res.ok) return null
+    data = await res.json()
+  } catch {
+    return null
+  }
+  if (!data.product) return null
+  const p = data.product as Record<string, unknown>
+
+  const name = typeof p.name === 'string' ? p.name.trim() : ''
+  if (!name) return null
+
+  const brand = typeof p.brand === 'string' && p.brand ? p.brand.trim() : null
+  const imageUrl = typeof p.imageUrl === 'string' && p.imageUrl ? p.imageUrl : null
+  const category = typeof p.category === 'string' ? p.category : ''
+
+  return {
+    barcode,
+    names: { en: name },
+    brand,
+    imageUrl,
     categoryTags: category ? [`en:${category.toLowerCase().replace(/\s+/g, '-')}`] : [],
     quantity: null,
   }
@@ -101,15 +140,17 @@ async function lookupUpcitemdb(barcode: string): Promise<OffProduct | null> {
 // ─── Veřejné API ──────────────────────────────────────────────────────────────
 
 /**
- * Dohledá produkt podle čárového kódu postupně ve dvou databázích:
+ * Dohledá produkt podle čárového kódu postupně ve třech databázích:
  * 1. Open Food Facts — nejlepší pokrytí potravin, lokalizované názvy
  * 2. UPCitemdb — globální pokrytí, bez API klíče, 100 req/den (free trial)
+ * 3. Go-UPC — 150 req/měsíc; vyžaduje VITE_GO_UPC_KEY v .env.local
  *
  * Vrací výsledek prvního úspěšného zdroje, nebo null.
  */
 export async function lookupBarcode(barcode: string): Promise<OffProduct | null> {
   return (
     (await lookupOpenFoodFacts(barcode)) ??
-    (await lookupUpcitemdb(barcode))
+    (await lookupUpcitemdb(barcode)) ??
+    (await lookupGoUpc(barcode))
   )
 }
