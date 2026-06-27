@@ -12,21 +12,47 @@ Typy změn: **Added** (přidáno) · **Changed** (změněno) · **Deprecated** (
 
 > Sem piš změny, které čekají na vydání. Při vydání je přesuň do nové verze níže.
 
+---
+
+## [0.1.2] — 2026-06-27
+
 ### Added
 
 - **Fallback chain pro vyhledávání čárového kódu**: po selhání Open Food Facts se pokus
   opakuje přes **UPCitemdb** (zdarma, 100 req/den, bez API klíče) a pak přes **Go-UPC**
-  (150 req/měsíc; klíč na vyžádání e-mailem, uložit jako `VITE_GO_UPC_KEY`). Výsledek
-  prvního úspěšného zdroje se zpracuje stejně jako dřív (DeepL překlad, učení).
+  (150 req/měsíc; klíč na vyžádání e-mailem). Výsledek prvního úspěšného zdroje se
+  zpracuje stejně jako dřív (DeepL překlad, učení).
 - **Indikátor otevřeného balení** (`is_opened`): položka jde označit jako „Otevřeno"
   — tlačítko přepínač v `EditItem` (oranžové = otevřeno, bílé = neotevřeno). Na kartě
   v seznamu se zobrazí oranžová ikona a text „Otevřeno". Otevřená balení se řadí
   automaticky na první místo v rámci kategorie i v pohledu podle expirace.
-  Vyžaduje SQL migraci: `ALTER TABLE public.items ADD COLUMN IF NOT EXISTS is_opened boolean NOT NULL DEFAULT false;`
+- **Přepínač kamery** v `BarcodeScanner`: tlačítko `FlipHorizontal` přepíná mezi
+  dostupnými kamerami (přední / zadní). Zobrazí se jen když je k dispozici více než
+  jedna kamera. Appka automaticky preferuje zadní (environment) kameru.
+- **Edge Function `upc-lookup`**: Go-UPC klíč přesunut ze frontend proměnné
+  (`VITE_GO_UPC_KEY`) do Supabase secret (`GO_UPC_KEY`), volání probíhá server-side.
+  Klíč se nikdy nedostane do JS bundle.
 
 ### Changed
 
+- **`upsertProductProfile`** přepsán na atomický SQL upsert přes RPC
+  `upsert_product_profile` — 1 DB roundtrip místo 2, bez race condition při
+  `times_seen` inkrementu.
+- **`updated_at`** nově nastavuje DB trigger (`BEFORE UPDATE`) místo klienta —
+  timestamp je vždy serverový a konzistentní.
+- **`@supabase/supabase-js`** aktualizován z 2.45.x na 2.108.2.
+
 ### Fixed
+
+- **`LocationRow`**: přepnutí jazyka při otevřené stránce Sklady přepisovalo
+  neuložené úpravy a způsobovalo nesprávný dirty-flag. Opraveno přes
+  `useEffect([location.name_i18n, lang])`.
+- **Magic-link v produkci**: zdokumentováno, že Site URL v Supabase Auth musí být
+  změněna na produkční Vercel URL (ne localhost) po prvním nasazení.
+
+### Security
+
+- Go-UPC API klíč přesunut na server (Edge Function) — odstraněna expozice v JS bundle.
 
 ---
 
@@ -95,6 +121,7 @@ jazyků ověřeno na dev serveru.
 - Row Level Security na všech tabulkách (`user_id = auth.uid()`).
 - DeepL API klíč drží Edge Function jako server-side secret, nikdy není v prohlížeči.
 
-[Unreleased]: https://github.com/goldstandard/ms-pantry/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/goldstandard/ms-pantry/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/goldstandard/ms-pantry/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/goldstandard/ms-pantry/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/goldstandard/ms-pantry/releases/tag/v0.1.0

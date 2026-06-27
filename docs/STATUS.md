@@ -1,6 +1,6 @@
 # Stav vývoje — MS Pantry
 
-> Verze **0.1.2-dev** · aktualizováno **2026-06-20**
+> Verze **0.1.2** · aktualizováno **2026-06-27**
 > Souhrn toho, co je hotové, ověřené a co zbývá. Historie změn je v
 > [CHANGELOG.md](../CHANGELOG.md).
 
@@ -9,7 +9,7 @@
 MVP je **kompletně nasazený a end-to-end ověřený**. Appka běží v produkci na Vercelu,
 databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
 
-- **Produkce:** https://ms-pantry-oyrt7fqn7-goldstandard.vercel.app
+- **Produkce:** https://ms-pantry-d1aj50dl7-goldstandard.vercel.app
 - **GitHub:** https://github.com/goldstandard/ms-pantry
 - **Databáze:** Supabase projekt `nyyyjsgmtxhlivslkmel`
 
@@ -37,8 +37,10 @@ databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
 | Správa skladů a prahů | ✅ ověřeno | |
 | Produkční nasazení (Vercel) | ✅ nasazeno | |
 | `start.bat` spouštěč (Windows) | ✅ hotovo | |
-| Fallback chain: OFF → UPCitemdb → Go-UPC | ✅ hotovo | Go-UPC 150 req/měsíc (VITE_GO_UPC_KEY) |
-| Indikátor otevřeného balení (`is_opened`) | ✅ hotovo | vyžaduje SQL migraci — viz níže |
+| Fallback chain: OFF → UPCitemdb → Go-UPC | ✅ ověřeno | Go-UPC přes Edge Function `upc-lookup` (secret `GO_UPC_KEY`) |
+| Indikátor otevřeného balení (`is_opened`) | ✅ ověřeno | SQL migrace provedena |
+| Přepínač kamery (přední / zadní) | ✅ hotovo | zobrazí se jen při více kamerách |
+| `updated_at` trigger v DB | ✅ hotovo | server-side, bez závislosti na klientovi |
 | Dokumentace | ✅ hotovo | průběžně aktualizováno |
 
 ## Co je ověřené
@@ -62,21 +64,22 @@ databáze i překlad jsou živé. Lokální vývoj přes `start.bat`.
   kód je správný, otestovat při běžném používání).
 - Synchronizace dat simultánně na dvou zařízeních.
 
-**Vyžaduje ruční krok v Supabase:**
-- Indikátor otevřeného balení — ke stávající DB je potřeba spustit v SQL Editoru:
-  ```sql
-  ALTER TABLE public.items
-    ADD COLUMN IF NOT EXISTS is_opened boolean NOT NULL DEFAULT false;
-  ```
+**Všechny ruční kroky v Supabase provedeny** (2026-06-27):
+- `is_opened` sloupec přidán (`ALTER TABLE items ADD COLUMN IF NOT EXISTS ...`)
+- `updated_at` trigger nasazen na `items` a `product_profiles`
+- RPC funkce `upsert_product_profile` vytvořena
+- Index `items_category_idx` přidán
 
 ## Kroky na uživateli — stav
 
 Všechny povinné i volitelné kroky jsou dokončeny:
 
 1. ✅ **Supabase**: projekt vytvořen, `schema.sql` spuštěn, tabulky vystaveny v Data API,
-   `.env.local` vyplněn.
+   `.env.local` vyplněn. Ruční migrace (trigger, RPC, index) provedeny 2026-06-27.
 2. ✅ **DeepL**: API klíč nastaven jako secret, Edge Function `translate` nasazena.
-3. ✅ **Vercel**: nasazení hotové, env proměnné nastaveny, redirect URL přidána.
+3. ✅ **Go-UPC**: klíč nastaven jako secret `GO_UPC_KEY`, Edge Function `upc-lookup` nasazena.
+4. ✅ **Vercel**: nasazení hotové, env proměnné nastaveny, Site URL a Redirect URL
+   nastaveny na produkční Vercel URL (opraveno po prvotní chybě s localhost).
 
 ## Známá omezení / technický dluh
 
