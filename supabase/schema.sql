@@ -45,11 +45,16 @@ create table if not exists public.items (
   expiration_date date,
   image_url text,
   note text,
+  is_opened boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create index if not exists items_location_idx on public.items (location_id);
 create index if not exists items_user_idx on public.items (user_id);
+create index if not exists items_category_idx on public.items (category_id);
+
+-- Migrace pro existující instalace (idempotentní)
+alter table public.items add column if not exists is_opened boolean not null default false;
 
 create table if not exists public.product_profiles (
   id uuid primary key default gen_random_uuid(),

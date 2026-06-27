@@ -63,6 +63,10 @@ npm install
 6. V **Auth → URL Configuration** nastav **Site URL** na adresu, kterou zobrazí
    `npm run dev` (obvykle `http://localhost:5173`, případně `5174` je-li obsazený)
    a stejnou URL přidej do **Redirect URLs**.
+   > ⚠️ **Pro produkci** (po nasazení na Vercel): Site URL musí být změněna na
+   > produkční Vercel URL (viz [Nasazení na Vercel](#nasazení-na-vercel-produkce--mobil)).
+   > Magic-link přesměruje přesně na hodnotu Site URL — pokud tam zůstane localhost,
+   > odkaz v e-mailu povede na localhost místo na appku.
 
 #### 3) Spuštění
 ```bash
@@ -147,7 +151,10 @@ npx supabase functions deploy translate
 
 1. Nahraj na GitHub, importuj v [vercel.com](https://vercel.com) (detekuje Vite automaticky).
 2. Nastav env proměnné `VITE_SUPABASE_URL` a `VITE_SUPABASE_ANON_KEY`.
-3. Produkční URL přidej v Supabase do **Auth → Redirect URLs**.
+3. V Supabase → **Auth → URL Configuration**:
+   - **Site URL** nastav na produkční Vercel URL (např. `https://ms-pantry-xxx.vercel.app`).
+   - Tutéž URL přidej do **Redirect URLs**.
+   > ℹ️ Toto je klíčový krok — bez něj magic-link přesměruje na localhost místo na appku.
 4. Na telefonu otevři URL → menu prohlížeče → **Přidat na plochu**.
 
 ---
