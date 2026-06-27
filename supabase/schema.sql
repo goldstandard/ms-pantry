@@ -157,3 +157,56 @@ begin
   end loop;
 end;
 $$;
+
+-- ----------------------------------------------------------------------------
+-- Trigger: automaticky nastav updated_at při UPDATE (bez závislosti na klientovi)
+-- ----------------------------------------------------------------------------
+
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create or replace trigger items_set_updated_at
+  before update on public.items
+  for each row execute function public.set_updated_at();
+
+create or replace trigger product_profiles_set_updated_at
+  before update on public.product_profiles
+  for each row execute function public.set_updated_at();
+
+-- ----------------------------------------------------------------------------
+-- RPC: upsert profilu produktu atomicky (1 roundtrip, bez race condition)
+-- ----------------------------------------------------------------------------
+
+create or replace function public.upsert_product_profile(
+  p_barcode             text,
+  p_name_i18n           jsonb,
+  p_brand               text,
+  p_default_category_id uuid,
+  p_default_servings    numeric,
+  p_default_unit        text
+)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  insert into public.product_profiles
+    (user_id, barcode, name_i18n, brand, default_category_id, default_servings, default_unit, times_seen, updated_at)
+  values
+    (auth.uid(), p_barcode, p_name_i18n, p_brand, p_default_category_id, p_default_servings, p_default_unit, 1, now())
+  on conflict (user_id, barcode) do update set
+    name_i18n           = excluded.name_i18n,
+    brand               = excluded.brand,
+    default_category_id = excluded.default_category_id,
+    default_servings    = excluded.default_servings,
+    default_unit        = excluded.default_unit,
+    times_seen          = product_profiles.times_seen + 1,
+    updated_at          = now();
+$$;

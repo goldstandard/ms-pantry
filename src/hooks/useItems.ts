@@ -58,7 +58,7 @@ export function useItemMutations() {
       const sb = requireSupabase()
       const { error } = await sb
         .from('items')
-        .update({ ...patch, updated_at: new Date().toISOString() })
+        .update(patch)
         .eq('id', id)
       if (error) throw error
     },
@@ -96,16 +96,18 @@ export type ProductProfileInput = Pick<
   'barcode' | 'name_i18n' | 'brand' | 'default_category_id' | 'default_servings' | 'default_unit'
 >
 
-/** Uloží/aktualizuje naučený profil a navýší times_seen. */
+/** Uloží/aktualizuje naučený profil a navýší times_seen (1 DB roundtrip, atomicky). */
 export async function upsertProductProfile(
   profile: ProductProfileInput,
 ): Promise<void> {
   const sb = requireSupabase()
-  const existing = await fetchProductProfile(profile.barcode)
-  const times_seen = (existing?.times_seen ?? 0) + 1
-  const { error } = await sb.from('product_profiles').upsert(
-    { ...profile, times_seen, updated_at: new Date().toISOString() },
-    { onConflict: 'user_id,barcode' },
-  )
+  const { error } = await sb.rpc('upsert_product_profile', {
+    p_barcode:             profile.barcode,
+    p_name_i18n:           profile.name_i18n,
+    p_brand:               profile.brand ?? null,
+    p_default_category_id: profile.default_category_id ?? null,
+    p_default_servings:    profile.default_servings ?? null,
+    p_default_unit:        profile.default_unit ?? null,
+  })
   if (error) throw error
 }

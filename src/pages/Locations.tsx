@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Plus, Trash2, Check } from 'lucide-react'
 import {
@@ -90,6 +90,11 @@ function LocationRow({
   const [critical, setCritical] = useState(location.critical_days)
   const [soon, setSoon] = useState(location.soon_days)
   const [busy, setBusy] = useState(false)
+
+  // Synchronizuj name state při změně jazyka nebo po uložení z jiného zařízení
+  useEffect(() => {
+    setName(displayName(location.name_i18n, lang))
+  }, [location.name_i18n, lang])
 
   const dirty =
     name.trim() !== displayName(location.name_i18n, lang) ||
