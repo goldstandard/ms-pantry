@@ -1,3 +1,4 @@
+import { supabase } from './supabase'
 import type { I18nText } from './types'
 
 export interface OffProduct {
@@ -99,33 +100,30 @@ async function lookupUpcitemdb(barcode: string): Promise<OffProduct | null> {
 
 // ─── Go-UPC (fallback #2) ─────────────────────────────────────────────────────
 // Free: 150 req/měsíc; klíč na vyžádání e-mailem na go-upc.com.
-// Klíč uložit jako VITE_GO_UPC_KEY v .env.local a v nastavení Vercelu.
-// Bez klíče se tento fallback tiše přeskočí.
+// Klíč je uložen jako Supabase secret GO_UPC_KEY (ne ve frontend bundle).
+// Volání probíhá přes Edge Function `upc-lookup`.
+// Bez nakonfigurovaného Supabase nebo bez klíče se tento fallback tiše přeskočí.
 
 async function lookupGoUpc(barcode: string): Promise<OffProduct | null> {
-  const key = import.meta.env.VITE_GO_UPC_KEY as string | undefined
-  if (!key) return null
+  if (!supabase) return null
 
-  const url = `https://go-upc.com/api/v1/code/${encodeURIComponent(barcode)}`
-  let data: { product?: Record<string, unknown> }
+  let product: Record<string, unknown> | null = null
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${key}`, Accept: 'application/json' },
-    })
-    if (!res.ok) return null
-    data = await res.json()
+    const { data, error } = await supabase.functions.invoke<{
+      product: Record<string, unknown> | null
+    }>('upc-lookup', { body: { barcode } })
+    if (error || !data?.product) return null
+    product = data.product
   } catch {
     return null
   }
-  if (!data.product) return null
-  const p = data.product as Record<string, unknown>
 
-  const name = typeof p.name === 'string' ? p.name.trim() : ''
+  const name = typeof product.name === 'string' ? product.name.trim() : ''
   if (!name) return null
 
-  const brand = typeof p.brand === 'string' && p.brand ? p.brand.trim() : null
-  const imageUrl = typeof p.imageUrl === 'string' && p.imageUrl ? p.imageUrl : null
-  const category = typeof p.category === 'string' ? p.category : ''
+  const brand = typeof product.brand === 'string' && product.brand ? product.brand.trim() : null
+  const imageUrl = typeof product.imageUrl === 'string' && product.imageUrl ? product.imageUrl : null
+  const category = typeof product.category === 'string' ? product.category : ''
 
   return {
     barcode,
@@ -143,7 +141,7 @@ async function lookupGoUpc(barcode: string): Promise<OffProduct | null> {
  * Dohledá produkt podle čárového kódu postupně ve třech databázích:
  * 1. Open Food Facts — nejlepší pokrytí potravin, lokalizované názvy
  * 2. UPCitemdb — globální pokrytí, bez API klíče, 100 req/den (free trial)
- * 3. Go-UPC — 150 req/měsíc; vyžaduje VITE_GO_UPC_KEY v .env.local
+ * 3. Go-UPC — 150 req/měsíc; vyžaduje Supabase secret GO_UPC_KEY (Edge Function upc-lookup)
  *
  * Vrací výsledek prvního úspěšného zdroje, nebo null.
  */

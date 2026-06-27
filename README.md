@@ -122,13 +122,17 @@ ALTER TABLE public.items
 Pokud Open Food Facts ani UPCitemdb produkt nenajdou, appka zkusí Go-UPC (150 req/měsíc).
 Klíč je dostupný zdarma na vyžádání e-mailem na [go-upc.com](https://go-upc.com).
 
-1. Přidej do `.env.local`:
-   ```
-   VITE_GO_UPC_KEY=tvuj-klic
-   ```
-2. Na Vercelu: **Settings → Environment Variables** → přidej `VITE_GO_UPC_KEY` → Redeploy.
+Volání probíhá přes Supabase Edge Function `upc-lookup` — klíč zůstává na serveru
+a **nikdy se nedostane do JS bundle v prohlížeči**.
 
-Bez klíče appka funguje normálně — Go-UPC se tiše přeskočí.
+```bash
+npx supabase login
+npx supabase link --project-ref TVUJ_PROJECT_REF
+npx supabase secrets set GO_UPC_KEY=tvuj-klic
+npx supabase functions deploy upc-lookup
+```
+
+Bez nasazené funkce nebo bez klíče appka funguje normálně — Go-UPC se tiše přeskočí.
 
 ---
 
