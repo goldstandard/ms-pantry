@@ -28,6 +28,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Nový service worker se aktivuje okamžitě — uživatel nemusí zavírat taby.
+        skipWaiting: true,
+        clientsClaim: true,
         // App shell se cachuje; data ze Supabase a Open Food Facts jdou vždy ze sítě.
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
