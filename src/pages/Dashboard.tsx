@@ -16,6 +16,7 @@ import {
 import type { Category, Item, Lang } from '../lib/types'
 
 type ViewMode = 'category' | 'expiry'
+type ExpiryFilter = 'all' | 'expired' | 'soon'
 
 export function Dashboard() {
   const { t, i18n } = useTranslation()
@@ -27,6 +28,7 @@ export function Dashboard() {
 
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
+  const [expiryFilter, setExpiryFilter] = useState<ExpiryFilter>('all')
   const [view, setView] = useState<ViewMode>('category')
 
   const activeLocation = locations.find((l) => l.id === activeLocationId)
@@ -39,6 +41,11 @@ export function Dashboard() {
     const q = search.trim().toLowerCase()
     return items.filter((it) => {
       if (categoryFilter !== 'all' && it.category_id !== categoryFilter) return false
+      if (expiryFilter !== 'all') {
+        const s = expiryStatus(it.expiration_date, thresholds)
+        if (expiryFilter === 'expired' && s !== 'expired') return false
+        if (expiryFilter === 'soon' && s !== 'critical' && s !== 'soon') return false
+      }
       if (q) {
         const hay = [...Object.values(it.name_i18n ?? {}), it.brand]
           .filter(Boolean)
@@ -48,7 +55,7 @@ export function Dashboard() {
       }
       return true
     })
-  }, [items, search, categoryFilter])
+  }, [items, search, categoryFilter, expiryFilter, thresholds])
 
   const summary = useMemo(() => {
     let expired = 0
@@ -68,10 +75,14 @@ export function Dashboard() {
         <SummaryPill
           tone="red"
           label={t('inventory.summaryExpired', { count: summary.expired })}
+          active={expiryFilter === 'expired'}
+          onClick={() => setExpiryFilter((f) => f === 'expired' ? 'all' : 'expired')}
         />
         <SummaryPill
           tone="amber"
           label={t('inventory.summarySoon', { count: summary.soon })}
+          active={expiryFilter === 'soon'}
+          onClick={() => setExpiryFilter((f) => f === 'soon' ? 'all' : 'soon')}
         />
       </div>
 
@@ -213,15 +224,29 @@ function GroupedByCategory({
   )
 }
 
-function SummaryPill({ tone, label }: { tone: 'red' | 'amber'; label: string }) {
+function SummaryPill({
+  tone,
+  label,
+  active,
+  onClick,
+}: {
+  tone: 'red' | 'amber'
+  label: string
+  active: boolean
+  onClick: () => void
+}) {
   const tones = {
-    red: 'bg-red-50 text-red-700 border-red-200',
-    amber: 'bg-amber-50 text-amber-700 border-amber-200',
+    red:   { base: 'bg-red-50 text-red-700 border-red-200',   ring: 'ring-2 ring-red-400' },
+    amber: { base: 'bg-amber-50 text-amber-700 border-amber-200', ring: 'ring-2 ring-amber-400' },
   }
   return (
-    <div className={`flex-1 rounded-lg border px-3 py-2 text-center text-sm font-medium ${tones[tone]}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 rounded-lg border px-3 py-2 text-center text-sm font-medium transition-shadow ${tones[tone].base} ${active ? tones[tone].ring : ''}`}
+    >
       {label}
-    </div>
+    </button>
   )
 }
 
